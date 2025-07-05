@@ -1,23 +1,22 @@
 import pandas as pd
 import streamlit as st
 
-# Carrega os dados da planilha
-df = pd.read_excel("vendas_realistas.xlsx")
-
-# Título do dashboard
+# Título da aplicação
 st.title("📊 Dashboard de Vendas - Missão Anti-Planilha™")
 
-# Filtro por filial
+# Carregando a planilha
+df = pd.read_excel("vendas_realistas.xlsx")
+
+# Filtro por filial (ajustado)
 filial = st.selectbox("Filtrar por filial:", df["filial"].unique())
 df_filtro = df[df["filial"] == filial]
 
-# Métricas principais
-st.metric("Total Vendido", f'R$ {df_filtro["preço"].sum():,.2f}')
+# Exibição de métricas com o nome correto da coluna
+st.metric("Total Vendido", f'R$ {df_filtro["preco"].sum():,.2f}')
 st.metric("Itens Vendidos", df_filtro.shape[0])
 
-# Gráfico de linha com soma de vendas por data
-df_filtro["data"] = pd.to_datetime(df_filtro["data"])
-st.line_chart(df_filtro.groupby("data")["preço"].sum())
+# Gráfico de linha por data
+st.line_chart(df_filtro.groupby("data")["preco"].sum())
 
-# Tabela detalhada
+# Exibição da tabela filtrada
 st.dataframe(df_filtro)
