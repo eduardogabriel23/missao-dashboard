@@ -55,3 +55,45 @@ fig2, ax2 = plt.subplots(figsize=(8, 8))
 ax2.pie(vendas_produto, labels=vendas_produto.index, autopct='%1.1f%%', startangle=140)
 ax2.set_title("Participação de Vendas por Produto")
 st.pyplot(fig2)
+
+from fpdf import FPDF
+
+st.subheader("📥 Gerar Relatório em PDF")
+
+if st.button("📄 Baixar PDF do Relatório"):
+    class PDF(FPDF):
+        def header(self):
+            self.set_font("Arial", "B", 14)
+            self.cell(0, 10, "📊 Relatório de Vendas - Missão Anti-Planilha™", ln=True, align="C")
+            self.ln(10)
+
+        def chapter_title(self, title):
+            self.set_font("Arial", "B", 12)
+            self.cell(0, 10, title, ln=True)
+            self.ln(5)
+
+        def chapter_body(self, text):
+            self.set_font("Arial", "", 12)
+            self.multi_cell(0, 10, text)
+            self.ln()
+
+    pdf = PDF()
+    pdf.add_page()
+    
+    # Dados do relatório
+    media = f"R$ {media_vendas:,.2f}"
+    total = f"R$ {vendas_filial:,.2f}"
+    
+    pdf.chapter_title("📌 Resumo da Filial")
+    resumo = f"Média Geral: {media}\nTotal da Filial Selecionada: {total}"
+    pdf.chapter_body(resumo)
+
+    pdf.chapter_title("🏆 Ranking de Vendas por Vendedor")
+    for vendedor, valor in ranking_vendedores.items():
+        pdf.chapter_body(f"{vendedor}: R$ {valor:,.2f}")
+    
+    # Salvar
+    pdf.output("relatorio_vendas.pdf")
+    with open("relatorio_vendas.pdf", "rb") as f:
+        st.download_button("⬇️ Clique aqui para baixar seu relatório PDF", f, file_name="relatorio_vendas.pdf")
+
