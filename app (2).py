@@ -26,3 +26,15 @@ st.bar_chart(ranking_vendedores)
 col1, col2 = st.columns(2)
 col1.metric("📉 Média Geral", f"R$ {media_vendas:,.2f}")
 col2.metric("🏪 Total da Filial", f"R$ {vendas_filial:,.2f}")
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+vendas_filial = df.groupby("filial")["preco"].sum().sort_values()
+
+plt.figure(figsize=(10, 5))
+sns.barplot(x=vendas_filial.values, y=vendas_filial.index, palette="Blues_d")
+plt.title("Total de Vendas por Filial")
+plt.xlabel("R$ Vendido")
+plt.ylabel("Filial")
+plt.show()
