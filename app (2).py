@@ -58,42 +58,17 @@ st.pyplot(fig2)
 
 from fpdf import FPDF
 
-st.subheader("📥 Gerar Relatório em PDF")
+pdf = FPDF()
+pdf.add_page()
 
-if st.button("📄 Baixar PDF do Relatório"):
-    class PDF(FPDF):
-        def header(self):
-            self.set_font("Arial", "B", 14)
-            self.cell(0, 10, "📊 Relatório de Vendas - Missão Anti-Planilha™", ln=True, align="C")
-            self.ln(10)
+# Usa fonte que entende acento e português
+pdf.add_font('DejaVu', '', 'DejaVuSans.ttf', uni=True)
+pdf.set_font('DejaVu', '', 14)
 
-        def chapter_title(self, title):
-            self.set_font("Arial", "B", 12)
-            self.cell(0, 10, title, ln=True)
-            self.ln(5)
+pdf.cell(0, 10, 'Relatório de Vendas por Filial', ln=True)
 
-        def chapter_body(self, text):
-            self.set_font("Arial", "", 12)
-            self.multi_cell(0, 10, text)
-            self.ln()
+for filial, valor in resumo.items():
+    pdf.cell(0, 10, f'{filial}: R$ {valor:,.2f}', ln=True)
 
-    pdf = PDF()
-    pdf.add_page()
-    
-    # Dados do relatório
-    media = f"R$ {media_vendas:,.2f}"
-    total = f"R$ {vendas_filial:,.2f}"
-    
-    pdf.chapter_title("📌 Resumo da Filial")
-    resumo = f"Média Geral: {media}\nTotal da Filial Selecionada: {total}"
-    pdf.chapter_body(resumo)
-
-    pdf.chapter_title("🏆 Ranking de Vendas por Vendedor")
-    for vendedor, valor in ranking_vendedores.items():
-        pdf.chapter_body(f"{vendedor}: R$ {valor:,.2f}")
-    
-    # Salvar
-    pdf.output("relatorio_vendas.pdf")
-    with open("relatorio_vendas.pdf", "rb") as f:
-        st.download_button("⬇️ Clique aqui para baixar seu relatório PDF", f, file_name="relatorio_vendas.pdf")
+pdf.output("relatorio_vendas.pdf")
 
